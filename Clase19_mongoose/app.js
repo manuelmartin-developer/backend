@@ -1,5 +1,8 @@
 const express = require('express');
-const products = require('./routes/products_routes');
+require('dotenv').config() //Carga variable configuracion
+require('./utils/db');// Lanzamos la BD con mongoose
+const products = require('./routes/product_routes');
+
 
 const app = express();
 const port = 3000;

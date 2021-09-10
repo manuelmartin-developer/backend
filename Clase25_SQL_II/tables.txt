@@ -1,0 +1,51 @@
+// Authors
+CREATE TABLE authors (
+  id_author serial NOT NULL PRIMARY KEY,
+  name varchar(45) NOT NULL,
+  surname varchar(45) NOT NULL,
+  email varchar(100) NOT NULL UNIQUE,
+  image varchar(255)
+);
+// Entries
+CREATE TABLE entries (
+  id_entry serial NOT NULL PRIMARY KEY,
+  title varchar(100) NOT NULL,
+  content text NOT NULL,
+  date date DEFAULT CURRENT_DATE,
+  id_author int,
+  category varchar(15),
+  FOREIGN KEY (id_author) REFERENCES authors(id_author)
+);
+
+// Inserta varios autores
+INSERT INTO authors(name,surname,email,image) VALUES
+('Alejandro','Reyes','alejandro@thebridgeschool.es','https://randomuser.me/api/portraits/thumb/men/75.jpg'),
+('Silvia','Lopez','silvia@thebridgeschool.es','https://randomuser.me/api/portraits/thumb/women/70.jpg'),
+('Juampi','Cantuña','juampi@thebridgeschool.es','https://randomuser.me/api/portraits/thumb/men/45.jpg');
+
+// Inserta entradas
+INSERT INTO entries(title,content,author_id,category) VALUES ('Noticia SOL','Contenido noticia 1','1','Felicidad');
+
+// Consultas
+
+// Búsqueda de entry por email de author
+SELECT * FROM entries WHERE id_author=(SELECT id_author FROM authors WHERE email='alejandro@thebridgeschool.es')
+
+// Inserción por email de author
+INSERT INTO entries(title,content,id_author,category) VALUES ('Noticia Nueva Alex','Contenido noticia 3',(SELECT id_author FROM authors WHERE email='alejandro@thebridgeschool.es'),'Ficción')
+
+/ Devolver datos de la entry + email,nombre,foto de todos los autores
+SELECT entries.title, entries.content,entries.category,entries.date,authors.email,authors.name,authors.image
+FROM entries
+INNER JOIN authors ON entries.id_author = authors.id_author
+// Devolver datos de la entry + email,nombre,foto de UN autor
+SELECT entries.title, entries.content,entries.category,entries.date,authors.email,authors.name,authors.image
+FROM entries
+INNER JOIN authors ON entries.id_author = authors.id_author WHERE authors.id_author = (SELECT id_author FROM authors WHERE email='alejandro@thebridgeschool.es')
+
+// Devolver datos de la entry + email,nombre,foto de UN autor por email con alias
+SELECT e.title, e.content,e.category,e.date,a.email,a.name,a.image
+FROM entries AS e
+INNER JOIN authors AS a
+ON e.id_author = a.id_author
+WHERE a.id_author = (SELECT id_author FROM authors WHERE email='alejandro@thebridgeschool.es')
